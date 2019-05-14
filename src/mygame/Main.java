@@ -39,25 +39,17 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-
-        DirectionalLight sun = new DirectionalLight();
-        sun.setColor(ColorRGBA.White);
-        sun.setDirection(cam.getDirection());
-        rootNode.addLight(sun);
-
-        /* Drop shadows */
-        final int SHADOWMAP_SIZE = 1024;
-        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, SHADOWMAP_SIZE, 3);
-        dlsr.setLight(sun);
-        viewPort.addProcessor(dlsr);
-
-        DirectionalLightShadowFilter dlsf = new DirectionalLightShadowFilter(assetManager, SHADOWMAP_SIZE, 3);
-        dlsf.setLight(sun);
-        dlsf.setEnabled(true);
-        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
-        fpp.addFilter(dlsf);
-        viewPort.addProcessor(fpp);
-
+        initLight();
+/*
+SpotLight spot = new SpotLight();
+spot.setSpotRange(1000f);                           // distance
+spot.setSpotInnerAngle(15f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
+spot.setSpotOuterAngle(35f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
+spot.setColor(ColorRGBA.White.mult(15));         // light color
+spot.setPosition(new Vector3f(-1, 5, 5));               // shine from camera loc
+spot.setDirection(cam.getDirection());             // shine forward from camera loc
+rootNode.addLight(spot);
+*/
         flyCam.setMoveSpeed(60);
         cam.setLocation(new Vector3f(0, 1f, -3f));
 
@@ -146,5 +138,39 @@ public class Main extends SimpleApplication {
 
         return geom;
 
+    }
+      private void initLight() {
+          
+        SpotLight spot = new SpotLight();
+        spot.setSpotRange(1000f);                               // distance
+        spot.setSpotInnerAngle(15f * FastMath.DEG_TO_RAD);      // inner light cone (central beam)
+        spot.setSpotOuterAngle(35f * FastMath.DEG_TO_RAD);      // outer light cone (edge of the light)
+        spot.setColor(ColorRGBA.White.mult(15));                // light color
+        spot.setPosition(new Vector3f(-1, 5, 5));               // shine from camera loc
+        spot.setDirection(cam.getDirection());                  // shine forward from camera loc
+        rootNode.addLight(spot);
+
+        DirectionalLight sun = new DirectionalLight();
+        sun.setColor(ColorRGBA.White);
+        sun.setDirection(cam.getDirection());
+        rootNode.addLight(sun);
+       
+        final int SHADOWMAP_SIZE = 1024;
+        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, SHADOWMAP_SIZE, 3);
+        dlsr.setLight(sun);
+        viewPort.addProcessor(dlsr);
+
+        DirectionalLightShadowFilter dlsf = new DirectionalLightShadowFilter(assetManager, SHADOWMAP_SIZE, 3);
+        dlsf.setLight(sun);
+        dlsf.setEnabled(true);
+        
+        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+        fpp.addFilter(dlsf);
+        viewPort.addProcessor(fpp);
+        
+        FilterPostProcessor fpp2 = new FilterPostProcessor(assetManager);
+        SSAOFilter ssaoFilter = new SSAOFilter(12.94f, 43.92f, 0.33f, 0.61f);
+        fpp2.addFilter(ssaoFilter);
+        viewPort.addProcessor(fpp2);
     }
 }
