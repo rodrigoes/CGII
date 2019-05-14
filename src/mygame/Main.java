@@ -1,6 +1,8 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.PointLight;
@@ -8,6 +10,7 @@ import com.jme3.light.SpotLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.ssao.SSAOFilter;
@@ -28,8 +31,15 @@ import com.jme3.texture.Texture;
  * @author normenhansen
  */
 public class Main extends SimpleApplication {
+    
+private Spatial PoolCue;
+private Spatial Table;
+private Spatial Ball;
+private Spatial VenetianBlind;
 
-    public static void main(String[] args) {
+private AudioNode music;
+
+public static void main(String[] args) {
         Main app = new Main();
         app.start();
     }
@@ -39,8 +49,9 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        initLight();
-/*
+       // initLight();
+       initAudio();
+
 SpotLight spot = new SpotLight();
 spot.setSpotRange(1000f);                           // distance
 spot.setSpotInnerAngle(15f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
@@ -49,7 +60,7 @@ spot.setColor(ColorRGBA.White.mult(15));         // light color
 spot.setPosition(new Vector3f(-1, 5, 5));               // shine from camera loc
 spot.setDirection(cam.getDirection());             // shine forward from camera loc
 rootNode.addLight(spot);
-*/
+
         flyCam.setMoveSpeed(60);
         cam.setLocation(new Vector3f(0, 1f, -3f));
 
@@ -74,23 +85,29 @@ rootNode.addLight(spot);
         wall.rotate(0, 1.5708f, 0); //90 graus 1.5708 rad
         rootNode.attachChild(wall);
 
-        Spatial Table = assetManager.loadModel("/Models/Table/Table.j3o");
+        Table = assetManager.loadModel("/Models/Table/Table.j3o");
         Table.scale(3);
         rootNode.attachChild(Table);
 
-        /*
-         Spatial Wardrobe = assetManager.loadModel("/Models/Others/Sideboard.j3o");
-         Wardrobe.scale(3);
+      /*
+         Spatial Wardrobe = assetManager.loadModel("/Models/Others/Sideboard.obj");
+         Wardrobe.scale(20);
          rootNode.attachChild(Wardrobe);*/
-        Spatial PoolCue = assetManager.loadModel("/Models/Others/Poolcue.j3o");
-        PoolCue.scale(3);
+        PoolCue = assetManager.loadModel("/Models/Others/Poolcue.j3o");
+        PoolCue.scale(50);
         rootNode.attachChild(PoolCue);
 
-        Spatial Ball = assetManager.loadModel("/Models/Others/ball.j3o");
+        Ball = assetManager.loadModel("/Models/Others/ball.j3o");
         Ball.scale(3);
         rootNode.attachChild(Ball);
+        
+        VenetianBlind = assetManager.loadModel("/Models/Others/VenetianBlind.j3o");
+        VenetianBlind.scale(0.3f);
+        VenetianBlind.rotate(0, 1.5708f, 0);
+        rootNode.attachChild(VenetianBlind);
 
-        //Wardrobe.setLocalTranslation(0, -4, -10.5f);
+       // Wardrobe.setLocalTranslation(0, -4, -10.5f);
+        VenetianBlind.setLocalTranslation(0, 0, -24.6f);
         Table.setLocalTranslation(0, -4, -10.5f);
         PoolCue.setLocalTranslation(0, -4f, -10.5f);
         Ball.setLocalTranslation(0, -4, -10.5f);
@@ -99,7 +116,7 @@ rootNode.addLight(spot);
 
     @Override
     public void simpleUpdate(float tpf) {
-        //TODO: add update code
+        setPoolCue();
     }
 
     @Override
@@ -172,5 +189,27 @@ rootNode.addLight(spot);
         SSAOFilter ssaoFilter = new SSAOFilter(12.94f, 43.92f, 0.33f, 0.61f);
         fpp2.addFilter(ssaoFilter);
         viewPort.addProcessor(fpp2);
+    }
+      
+        private void setPoolCue() {
+        Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(PoolCue.getWorldTranslation()));
+        PoolCue.setLocalTranslation(vectorDifference.addLocal(PoolCue.getLocalTranslation()));
+        
+        Quaternion worldDiff = new Quaternion(cam.getRotation().mult(PoolCue.getWorldRotation().inverse()));
+        PoolCue.setLocalRotation(worldDiff.multLocal(PoolCue.getLocalRotation()));
+        
+        PoolCue.move(cam.getDirection().mult(2.5f));
+        PoolCue.move(cam.getUp().mult(-0.5f));
+        PoolCue.move(cam.getLeft().mult(0));
+        PoolCue.rotate(0, FastMath.PI * 1.45f, 0);
+    }
+        
+        private void initAudio() {
+        music = new AudioNode(assetManager, "Sounds/inter.wav", AudioData.DataType.Buffer);
+        music.setPositional(false);
+        music.setLooping(true);
+        music.setVolume(3);
+        rootNode.attachChild(music);
+        music.play();
     }
 }
