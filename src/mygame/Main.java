@@ -1,8 +1,12 @@
 package mygame;
 
+import com.jme3.animation.LoopMode;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.PointLight;
@@ -49,7 +53,8 @@ public static void main(String[] args) {
 
     @Override
     public void simpleInitApp() {
-       // initLight();
+     //  initLight();
+       initKeys();
        initAudio();
 
 SpotLight spot = new SpotLight();
@@ -94,7 +99,14 @@ rootNode.addLight(spot);
          Wardrobe.scale(20);
          rootNode.attachChild(Wardrobe);*/
         PoolCue = assetManager.loadModel("/Models/Others/Poolcue.j3o");
-        PoolCue.scale(50);
+       // Same Model
+    // IMPORTANT : You must navigate to the Geometry for this to work
+   // Geometry geom = ((Geometry) ((Node) PoolCue).getChild("MonkeyHeadGeom"));
+  //  geom.addControl(new RigidBodyControl(0));
+    // Works great (scaling of a MeshCollisionShape)
+ //  geom.getControl(RigidBodyControl.class).getCollisionShape().setScale(new Vector3f(2, 2, 2));
+  //  bulletAppState.getPhysicsSpace().add(geom);
+        PoolCue.scale(3);
         rootNode.attachChild(PoolCue);
 
         Ball = assetManager.loadModel("/Models/Others/ball.j3o");
@@ -116,7 +128,7 @@ rootNode.addLight(spot);
 
     @Override
     public void simpleUpdate(float tpf) {
-        setPoolCue();
+     //  setPoolCue();
     }
 
     @Override
@@ -192,6 +204,7 @@ rootNode.addLight(spot);
     }
       
         private void setPoolCue() {
+            
         Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(PoolCue.getWorldTranslation()));
         PoolCue.setLocalTranslation(vectorDifference.addLocal(PoolCue.getLocalTranslation()));
         
@@ -199,9 +212,9 @@ rootNode.addLight(spot);
         PoolCue.setLocalRotation(worldDiff.multLocal(PoolCue.getLocalRotation()));
         
         PoolCue.move(cam.getDirection().mult(2.5f));
-        PoolCue.move(cam.getUp().mult(-0.5f));
-        PoolCue.move(cam.getLeft().mult(0));
-        PoolCue.rotate(0, FastMath.PI * 1.45f, 0);
+        PoolCue.move(cam.getUp().mult(-3.5f));
+        PoolCue.move(cam.getLeft().mult(0.7f));
+      //  PoolCue.rotate(0.1f, FastMath.PI * 1.45f, 0.13f);
     }
         
         private void initAudio() {
@@ -212,4 +225,27 @@ rootNode.addLight(spot);
         rootNode.attachChild(music);
         music.play();
     }
+        
+        private void initKeys(){
+            inputManager.addMapping("play", new MouseButtonTrigger(mouseInput.BUTTON_LEFT));
+            inputManager.addListener(actionListener, "play");
+        }
+        
+        private ActionListener actionListener = new ActionListener() { 
+        public void onAction(String name, boolean keyPressed, float tpf) {
+            
+            if (name.equals("play") && !keyPressed) {
+                hitPoolCue();
+            }
+           
+        }
+    };
+        
+        private void hitPoolCue(){
+            
+            PoolCue.move(0, 0, 2);
+            
+        
+            
+        }
 }
