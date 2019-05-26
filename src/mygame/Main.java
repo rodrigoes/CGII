@@ -79,15 +79,10 @@ public class Main extends SimpleApplication {
         initPhysics();
         initLight();
         initKeys();
-        initAudio();
-       
         
-        stone_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        TextureKey key2 = new TextureKey("Textures/1.jpg");
-        key2.setGenerateMips(true);
-        Texture tex2 = assetManager.loadTexture(key2);
-        stone_mat.setTexture("ColorMap", tex2);
-
+        initAudio();
+        initTexture();
+        
         flyCam.setMoveSpeed(60);
         cam.setLocation(new Vector3f(0, 1f, -3f));
       //  cam.lookAt(new Vector3f(2, 2, 0), Vector3f.UNIT_Y);
@@ -117,7 +112,7 @@ public class Main extends SimpleApplication {
         bulletAppState.getPhysicsSpace().add(wall);
         rootNode.attachChild(wall);
 
-        Table = assetManager.loadModel("/Models/Table/agrvai.2obj.j3o");
+        Table = assetManager.loadModel("/Models/Table/agrvai7.j3o");
         Material gun_mat;
         gun_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Texture gun_text = assetManager.loadTexture("/Models/Table/wood032.jpg");
@@ -143,7 +138,7 @@ public class Main extends SimpleApplication {
 
         PoolCue.scale(3);
         PoolCue.move(0.5f, -3.5f, -14.1f);
-        RigidBodyControl r2 = new RigidBodyControl(0);
+        RigidBodyControl r2 = new RigidBodyControl(0);  
         PoolCue.addControl(r2);
         r2.setPhysicsLocation(PoolCue.getLocalTranslation());
         bulletAppState.getPhysicsSpace().add(r2);
@@ -248,9 +243,16 @@ public class Main extends SimpleApplication {
     ball_geo.addControl(ball_phy);
     bulletAppState.getPhysicsSpace().add(ball_phy);
     /** Accelerate the physcial ball to shoot it. */
-    ball_phy.setLinearVelocity(cam.getDirection().mult(0.2f));
+  //  ball_phy.setLinearVelocity(cam.getDirection().mult(0.2f));
    
   }
+     private void initTexture(){
+        stone_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        TextureKey key2 = new TextureKey("Textures/5.jpg");
+        key2.setGenerateMips(true);
+        Texture tex2 = assetManager.loadTexture(key2);
+        stone_mat.setTexture("ColorMap", tex2);
+     } 
     private void setPoolCue() {
 
         Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(PoolCue.getWorldTranslation()));
