@@ -45,6 +45,7 @@ public class Main extends SimpleApplication {
 
     private Spatial PoolCue;
     private Spatial Table;
+    private Spatial Barreira;
     private Spatial Ball;
     private Spatial Ball2;
     private Spatial Ball3;
@@ -53,9 +54,10 @@ public class Main extends SimpleApplication {
     private BulletAppState bulletAppState;
     private AudioNode music;
     private RigidBodyControl ball_phy;
+    private RigidBodyControl taco;
     private static final Sphere sphere;
     Material stone_mat;
-   
+    Material mat;
     static {
     /** Initialize the cannon ball geometry */
      sphere = new Sphere(32, 32, 0.1f, true, false);
@@ -117,8 +119,8 @@ public class Main extends SimpleApplication {
         gun_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Texture gun_text = assetManager.loadTexture("/Models/Table/wood032.jpg");
         gun_mat.setTexture("ColorMap", gun_text);
-      //  Table.setMaterial(gun_mat);
-        Table.setLocalScale(0.81f);
+        Table.setMaterial(gun_mat);
+        Table.setLocalScale(0.85f);
         Table.move(0, -3.63f, -10.5f);
         Table.rotate(0, 1.5708f, 0);
         rootNode.attachChild(Table);
@@ -127,7 +129,22 @@ public class Main extends SimpleApplication {
         Table.addControl(r5);
         r5.setPhysicsLocation(Table.getLocalTranslation());
         bulletAppState.getPhysicsSpace().add(Table);
+        
+       /* Barreira = assetManager.loadModel("/Models/Table/barreira.j3o");
+     
+        Texture gun_textq = assetManager.loadTexture("/Models/Table/wood032.jpg");
+        gun_mat.setTexture("ColorMap", gun_textq);
+        Barreira.setMaterial(gun_mat);
+        Barreira.setLocalScale(0.85f);
+        Barreira.move(0, -3.10f, -18.5f);
+        Barreira.rotate(0, 1.5708f, 0);
+        rootNode.attachChild(Barreira);
 
+        RigidBodyControl r7 = new RigidBodyControl(0);
+        Barreira.addControl(r7);
+        r7.setPhysicsLocation(Barreira.getLocalTranslation());
+        bulletAppState.getPhysicsSpace().add(Barreira);
+*/
         
         Spatial Wardrobe = assetManager.loadModel("/Models/Others/Sideboard.obj");
         Wardrobe.scale(20);
@@ -137,16 +154,30 @@ public class Main extends SimpleApplication {
         PoolCue = assetManager.loadModel("/Models/Others/Poolcue.j3o");
 
         PoolCue.scale(3);
-        PoolCue.move(0.5f, -3.5f, -14.1f);
-        RigidBodyControl r2 = new RigidBodyControl(0);  
-        PoolCue.addControl(r2);
-        r2.setPhysicsLocation(PoolCue.getLocalTranslation());
-        bulletAppState.getPhysicsSpace().add(r2);
-        rootNode.attachChild(PoolCue);
+        PoolCue.move(0.5f, -3.6f, -8.1f);
+        rootNode.attachChild(PoolCue)
+                ;
+        taco = new RigidBodyControl(0);  
+        PoolCue.addControl(taco);
+        bulletAppState.getPhysicsSpace().add(taco);
         
-        makeCannonBall(0, -2, -10.5f);
-     //   makeCannonBall(0, -2, -10.1f);
-       //makeCannonBall(0, -5, -10.1f);
+       float a = 0.195f,b = -1.85f ;
+                  
+        makeCannonBall(0, b, -14.5f,"Textures/1.jpg");
+        makeCannonBall(0.195f, b, -14.5f,"Textures/2.jpg");
+        makeCannonBall(0.195f * 2, b, -14.5f,"Textures/3.jpg");
+        makeCannonBall(0.195f * 3  ,b, -14.5f,"Textures/4.jpg");
+        makeCannonBall(0.195f * 4, b, -14.5f,"Textures/5.jpg");
+        makeCannonBall(0 , b, -13.5f,"Textures/6.jpg");
+        makeCannonBall(0.195f, b, -13.5f,"Textures/7.jpg");
+        makeCannonBall(0.195f* 2,b, -13.5f,"Textures/8.jpg");
+        makeCannonBall(0.195f * 3 ,b, -13.5f,"Textures/9.jpg");
+        makeCannonBall(0, b, -12.5f,"Textures/10.jpg");
+        makeCannonBall(0.195f, b, -12.5f,"Textures/11.jpg");
+        makeCannonBall(0.195f * 2, b, -12.5f,"Textures/12.jpg");
+        makeCannonBall(0, b, -11.5f,"Textures/13.jpg");
+        makeCannonBall(0.195f, b, -11.5f,"Textures/14.jpg");
+        makeCannonBall(0.195f * 3 ,b, -10.5f,"Textures/15.jpg");
        // Ball.move(0, -5, -10.1f);
        
         
@@ -204,10 +235,6 @@ public class Main extends SimpleApplication {
 
         Box a = new Box(xtam, ytam, ztam);
         Geometry geom = new Geometry("Box", a);
-
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture monkeyTex = assetManager.loadTexture("Textures/madeira.jpg");
-        mat.setTexture("ColorMap", monkeyTex);
         geom.setMaterial(mat);
 
         geom.setLocalTranslation(xpos, ypos, zpos);
@@ -229,7 +256,13 @@ public class Main extends SimpleApplication {
 
     }
     
-      public void makeCannonBall(float x,float y,float z) {
+      public void makeCannonBall(float x,float y,float z, String w) {
+          
+         stone_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        TextureKey key2 = new TextureKey(w);
+        key2.setGenerateMips(true);
+        Texture tex2 = assetManager.loadTexture(key2);
+        stone_mat.setTexture("ColorMap", tex2);
           
     /** Create a cannon ball geometry and attach to scene graph. */
     Geometry ball_geo = new Geometry("cannon ball", sphere);
@@ -243,7 +276,11 @@ public class Main extends SimpleApplication {
     ball_geo.addControl(ball_phy);
     bulletAppState.getPhysicsSpace().add(ball_phy);
     /** Accelerate the physcial ball to shoot it. */
-  //  ball_phy.setLinearVelocity(cam.getDirection().mult(0.2f));
+    // ball_phy.setLinearVelocity(cam.getDirection().mult(0.2f));
+  
+        
+       
+        
    
   }
      private void initTexture(){
@@ -252,6 +289,12 @@ public class Main extends SimpleApplication {
         key2.setGenerateMips(true);
         Texture tex2 = assetManager.loadTexture(key2);
         stone_mat.setTexture("ColorMap", tex2);
+        
+        
+        mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex = assetManager.loadTexture("Textures/madeira.jpg");
+        mat.setTexture("ColorMap", monkeyTex);
+        
      } 
     private void setPoolCue() {
 
