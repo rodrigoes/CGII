@@ -60,7 +60,7 @@ public class Main extends SimpleApplication {
     Material mat;
     static {
     /** Initialize the cannon ball geometry */
-     sphere = new Sphere(32, 32, 0.1f, true, false);
+     sphere = new Sphere(32, 32, 0.39f, true, false);
      sphere.setTextureMode(TextureMode.Projected);
     /** Initialize the brick geometry */
     
@@ -84,10 +84,11 @@ public class Main extends SimpleApplication {
         
         initAudio();
         initTexture();
+        makeTable();
         
         flyCam.setMoveSpeed(60);
         cam.setLocation(new Vector3f(0, 1f, -3f));
-      //  cam.lookAt(new Vector3f(2, 2, 0), Vector3f.UNIT_Y);
+       //cam.lookAt(new Vector3f(2, 2, 0), Vector3f.UNIT_Y);
         shootables = new Node("Shootables");
         makeFloor(0, -4, -10.5f);
         bulletAppState.getPhysicsSpace().add(shootables);
@@ -99,21 +100,25 @@ public class Main extends SimpleApplication {
         rootNode.attachChild(shootables);
          */
         wall = new Node("wall");
-        wall.attachChild(makeWall(10, 1, -10.5f, 0.2f, 5, 15));
+        wall.attachChild(makeWall(15, 1, -10.5f, 0.2f, 5, 20));
         bulletAppState.getPhysicsSpace().add(wall);
         rootNode.attachChild(wall);
 
         wall = new Node("wall");
-        wall.attachChild(makeWall(-10, 1, -10.5f, 0.2f, 5, 15));
+        wall.attachChild(makeWall(-15, 1, -10.5f, 0.2f, 5, 20));
         bulletAppState.getPhysicsSpace().add(wall);
         rootNode.attachChild(wall);
 
         wall = new Node("wall");
-        wall.attachChild(makeWall(25, 1, 0, 0.2f, 5, 10));
+        wall.attachChild(makeWall(30, 1, 0, 0.f, 5, 15));
         wall.rotate(0, 1.5708f, 0); //90 graus 1.5708 rad
         bulletAppState.getPhysicsSpace().add(wall);
         rootNode.attachChild(wall);
-
+        //////
+        
+     
+        
+/*
         Table = assetManager.loadModel("/Models/Table/agrvai7.j3o");
         Material gun_mat;
         gun_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -128,7 +133,7 @@ public class Main extends SimpleApplication {
         RigidBodyControl r5 = new RigidBodyControl(10);
         Table.addControl(r5);
         r5.setPhysicsLocation(Table.getLocalTranslation());
-        bulletAppState.getPhysicsSpace().add(Table);
+        bulletAppState.getPhysicsSpace().add(Table);*/
         
        /* Barreira = assetManager.loadModel("/Models/Table/barreira.j3o");
      
@@ -153,15 +158,15 @@ public class Main extends SimpleApplication {
         
         PoolCue = assetManager.loadModel("/Models/Others/Poolcue.j3o");
 
-        PoolCue.scale(3);
-        PoolCue.move(0.5f, -3.6f, -8.1f);
+        PoolCue.scale(5);
+        PoolCue.move(0.5f, -3.8f, -8.1f);
         rootNode.attachChild(PoolCue)
                 ;
         taco = new RigidBodyControl(0);  
         PoolCue.addControl(taco);
         bulletAppState.getPhysicsSpace().add(taco);
         
-       float a = 0.195f,b = -1.85f ;
+       float b = -2f ;
                   
         makeCannonBall(0, b, -14.5f,"Textures/1.jpg");
         makeCannonBall(0.195f, b, -14.5f,"Textures/2.jpg");
@@ -191,7 +196,7 @@ public class Main extends SimpleApplication {
         rootNode.attachChild(VenetianBlind);
         
         //Wardrobe.setLocalTranslation(0, -4, -10.5f);
-         VenetianBlind.setLocalTranslation(0, 0, -24.6f);
+         VenetianBlind.setLocalTranslation(0, 0, -29.6f);
         //  Table.setLocalTranslation(0, -4, -10.5f);
         //  PoolCue.setLocalTranslation(0, -3.9f, -10.5f);
         //  Ball.setLocalTranslation(0, -4, -10.5f);
@@ -210,7 +215,7 @@ public class Main extends SimpleApplication {
 
     protected void makeFloor(float x, float y, float z) {
 
-        Box a = new Box(10, 0.1f, 15);
+        Box a = new Box(15, 0.1f, 20);
         Geometry geom = new Geometry("Box", a);
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -229,7 +234,172 @@ public class Main extends SimpleApplication {
         bulletAppState.getPhysicsSpace().add(r);
 
     }
+    protected void makeTable(){
+        
+       Box a = new Box(11, 0.2f, 5.5f);
+        Geometry geoma = new Geometry("Box", a);
 
+        Material mata = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex4 = assetManager.loadTexture("Textures/Felt.jpg"); 
+        mata.setTexture("ColorMap", monkeyTex4); 
+        geoma.setMaterial(mata);
+        geoma.setLocalTranslation(0, -2, -15.5f);
+
+        rootNode.attachChild(geoma);
+        
+        RigidBodyControl r = new RigidBodyControl(0.0f);
+
+        geoma.addControl(r);
+
+        r.setPhysicsLocation(geoma.getLocalTranslation());
+
+        bulletAppState.getPhysicsSpace().add(r);
+
+         Box b1 = new Box(11, 1, 5.5f);
+        Geometry geomb = new Geometry("Box", b1);
+
+        Material matb = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTexb = assetManager.loadTexture("Textures/Mahogany.jpg"); 
+        matb.setTexture("ColorMap", monkeyTexb); 
+        geomb.setMaterial(matb);
+        geomb.setLocalTranslation(0, -3.2f, -15.5f);
+
+        rootNode.attachChild(geomb);
+        
+        RigidBodyControl rb = new RigidBodyControl(0.0f);
+
+        geomb.addControl(rb);
+
+        rb.setPhysicsLocation(geomb.getLocalTranslation());
+
+        bulletAppState.getPhysicsSpace().add(rb);
+
+        
+         Box a1= new Box(4.5f, -0.35f, 0.5f);
+        Geometry geoma1 = new Geometry("Box", a1);
+
+        Material mata1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex2 = assetManager.loadTexture("Textures/Mahogany.jpg"); 
+        mata1.setTexture("ColorMap", monkeyTex2); 
+        geoma1.setMaterial(mata1);
+        geoma1.setLocalTranslation(-4.5f, -1.39f, -10.5f);
+
+        rootNode.attachChild(geoma1);
+        
+                
+        RigidBodyControl r20 = new RigidBodyControl(0.0f);
+
+        geoma1.addControl(r20);
+
+        r20.setPhysicsLocation(geoma1.getLocalTranslation());
+
+        bulletAppState.getPhysicsSpace().add(r20);
+
+        
+          Box a2= new Box(4, -0.35f, 0.5f);
+        Geometry geoma2 = new Geometry("Box", a2);
+
+        Material mata2 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex3 = assetManager.loadTexture("Textures/Mahogany.jpg"); 
+        mata2.setTexture("ColorMap", monkeyTex3); 
+        geoma2.setMaterial(mata2);
+        geoma2.setLocalTranslation(5, -1.39f, -10.5f);
+
+        rootNode.attachChild(geoma2);
+        
+        RigidBodyControl r21 = new RigidBodyControl(0.0f);
+
+        geoma2.addControl(r21);
+
+        r21.setPhysicsLocation(geoma2.getLocalTranslation());
+
+        bulletAppState.getPhysicsSpace().add(r21);
+        
+        Box a3= new Box(4.5f, -0.35f, 0.5f);
+        Geometry geoma3 = new Geometry("Box", a3);
+
+        Material mata3 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex5 = assetManager.loadTexture("Textures/Mahogany.jpg"); 
+        mata3.setTexture("ColorMap", monkeyTex5); 
+        geoma3.setMaterial(mata3);
+        geoma3.setLocalTranslation(-4.5f, -1.39f, -20.5f);
+
+        rootNode.attachChild(geoma3);
+        
+        
+        RigidBodyControl r22 = new RigidBodyControl(0.0f);
+
+        geoma3.addControl(r22);
+
+        r22.setPhysicsLocation(geoma3.getLocalTranslation());
+
+        bulletAppState.getPhysicsSpace().add(r22);
+        
+        
+        Box a4= new Box(4, -0.35f, 0.5f);
+        Geometry geoma4 = new Geometry("Box", a4);
+
+        Material mata4 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex6 = assetManager.loadTexture("Textures/Mahogany.jpg"); 
+        mata4.setTexture("ColorMap", monkeyTex6); 
+        geoma4.setMaterial(mata4);
+        geoma4.setLocalTranslation(5, -1.39f, -20.5f);
+
+        rootNode.attachChild(geoma4);
+        
+        
+        RigidBodyControl r24 = new RigidBodyControl(0.0f);
+
+        geoma4.addControl(r24);
+
+        r24.setPhysicsLocation(geoma4.getLocalTranslation());
+
+        bulletAppState.getPhysicsSpace().add(r24);
+        
+        Box a5= new Box(0.5f, -0.35f, 4);
+        Geometry geoma5 = new Geometry("Box", a5);
+
+        Material mata5 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex7 = assetManager.loadTexture("Textures/Mahogany.jpg"); 
+        mata5.setTexture("ColorMap", monkeyTex7); 
+        geoma5.setMaterial(mata5);
+        geoma5.setLocalTranslation(10.2f
+                , -1.39f, -15.5f);
+
+        rootNode.attachChild(geoma5);
+        
+        
+        RigidBodyControl r25 = new RigidBodyControl(0.0f);
+
+        geoma5.addControl(r25);
+
+        r25.setPhysicsLocation(geoma5.getLocalTranslation());
+
+        bulletAppState.getPhysicsSpace().add(r25);
+        
+        
+       Box a6= new Box(0.5f, -0.35f, 4);
+        Geometry geoma6 = new Geometry("Box", a6);
+
+        Material mata6 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex8 = assetManager.loadTexture("Textures/Mahogany.jpg"); 
+        mata6.setTexture("ColorMap", monkeyTex8); 
+        geoma6.setMaterial(mata6);
+        geoma6.setLocalTranslation(-10.2f
+                , -1.39f, -15.5f);
+
+        rootNode.attachChild(geoma6);
+        
+        
+        RigidBodyControl r27 = new RigidBodyControl(0.0f);
+
+        geoma6.addControl(r27);
+
+        r27.setPhysicsLocation(geoma6.getLocalTranslation());
+
+        bulletAppState.getPhysicsSpace().add(r27);
+        
+    }
 //(10, 1, -10.5f)
     protected Geometry makeWall(int xpos, int ypos, float zpos, float xtam, int ytam, int ztam) {
 
@@ -242,6 +412,8 @@ public class Main extends SimpleApplication {
         return geom;
 
     }
+    
+    
 
     private void initLight() {
 
@@ -276,7 +448,7 @@ public class Main extends SimpleApplication {
     ball_geo.addControl(ball_phy);
     bulletAppState.getPhysicsSpace().add(ball_phy);
     /** Accelerate the physcial ball to shoot it. */
-    // ball_phy.setLinearVelocity(cam.getDirection().mult(0.2f));
+     ball_phy.setLinearVelocity(cam.getDirection().mult(2));
   
         
        
