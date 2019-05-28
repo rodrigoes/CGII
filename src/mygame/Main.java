@@ -55,6 +55,8 @@ public class Main extends SimpleApplication {
     private Spatial VenetianBlind;
     private BulletAppState bulletAppState;
     private AudioNode music;
+    private AudioNode batidataco;
+    private AudioNode batidabola;
     private RigidBodyControl ball_phy;
     private RigidBodyControl taco;
     private static final Sphere sphere;
@@ -368,6 +370,22 @@ public class Main extends SimpleApplication {
         music.setVolume(3);
         rootNode.attachChild(music);
         music.play();
+        
+        
+        batidataco = new AudioNode(assetManager, "Sounds/batidataco.wav", AudioData.DataType.Buffer);
+        batidataco.setPositional(false);
+        batidataco.setLooping(true);
+        batidataco.setVolume(3);
+        rootNode.attachChild(batidataco);
+        
+        
+        batidabola = new AudioNode(assetManager, "Sounds/bolasbatendo.wav", AudioData.DataType.Buffer);
+        batidabola.setPositional(false);
+        batidabola.setLooping(true);
+        batidabola.setVolume(3);
+        rootNode.attachChild(batidabola);
+        
+        
     }
 
     private void initKeys() {
