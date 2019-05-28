@@ -58,8 +58,8 @@ public class Main extends SimpleApplication {
     private RigidBodyControl ball_phy;
     private RigidBodyControl taco;
     private static final Sphere sphere;
-    Material stone_mat;
-
+    Material stone_mat; 
+    Material arcade;
     Material mat;
 
     static {
@@ -176,7 +176,7 @@ public class Main extends SimpleApplication {
         bulletAppState.getPhysicsSpace().add(taco);
         
         float a = 0.195f;
-        float b = -2f;
+        float b = -1f;
         
         makeCannonBall(a * 5, 10, -14.5f, "Textures/branca.jpg");
         
@@ -199,10 +199,12 @@ public class Main extends SimpleApplication {
         makeCannonBall(a * 3, b, -10.5f, "Textures/15.jpg");
         // Ball.move(0, -5, -10.1f);
 
-        VenetianBlind = assetManager.loadModel("/Models/Others/VenetianBlind.j3o");
-        VenetianBlind.scale(0.3f);
-        VenetianBlind.rotate(0, 1.5708f, 0);
-        VenetianBlind.setLocalTranslation(0, 2, -29.6f);
+        VenetianBlind = assetManager.loadModel("/Models/Others/Arcade machine.j3o");
+        VenetianBlind.scale(0.06f);
+        VenetianBlind.setMaterial(arcade);
+        
+        VenetianBlind.rotate(0, 0, 0);
+        VenetianBlind.setLocalTranslation(0, -4, -27.6f);
         bulletAppState.getPhysicsSpace().add(VenetianBlind);
         rootNode.attachChild(VenetianBlind);
 
@@ -244,17 +246,17 @@ public class Main extends SimpleApplication {
 
         MakeBox(11, 1, 5.5f, "Textures/Mahogany.jpg", 0, -3.2f, -15.5f);
 
-        MakeBox(4.5f, -0.35f, 0.5f, "Textures/Mahogany.jpg", -4.5f, -1.39f, -10.5f);
+        MakeBox(4.5f, -0.35f, 0.5f, "Textures/Felt.jpg", -4.5f, -1.39f, -10.5f);
 
-        MakeBox(4, -0.35f, 0.5f, "Textures/Mahogany.jpg", 5, -1.39f, -10.5f);
+        MakeBox(4, -0.35f, 0.5f, "Textures/Felt.jpg", 5, -1.39f, -10.5f);
 
-        MakeBox(4.5f, -0.35f, 0.5f, "Textures/Mahogany.jpg", -4.5f, -1.39f, -20.5f);
+        MakeBox(4.5f, -0.35f, 0.5f, "Textures/Felt.jpg", -4.5f, -1.39f, -20.5f);
 
-        MakeBox(4, -0.35f, 0.5f, "Textures/Mahogany.jpg", 5, -1.39f, -20.5f);
+        MakeBox(4, -0.35f, 0.5f, "Textures/Felt.jpg", 5, -1.39f, -20.5f);
 
-        MakeBox(0.5f, -0.35f, 4, "Textures/Mahogany.jpg", 10.2f, -1.39f, -15.5f);
+        MakeBox(0.5f, -0.35f, 4, "Textures/Felt.jpg", 10.2f, -1.39f, -15.5f);
 
-        MakeBox(0.5f, -0.35f, 4, "Textures/Mahogany.jpg", -10.2f, -1.39f, -15.5f);
+        MakeBox(0.5f, -0.35f, 4, "Textures/Felt.jpg", -10.2f, -1.39f, -15.5f);
 
         MakeBox(0.5f, -0.35f, 6, "Textures/Mahogany.jpg", 11.2f, -1.39f, -15.5f);
 
@@ -285,11 +287,11 @@ public class Main extends SimpleApplication {
         spot.setSpotRange(1000f);                           // distance
         spot.setSpotInnerAngle(15f * FastMath.DEG_TO_RAD);  // inner light cone (central beam)
         spot.setSpotOuterAngle(35f * FastMath.DEG_TO_RAD);  // outer light cone (edge of the light)
-        spot.setColor(ColorRGBA.White.mult(5));             // light color
+        spot.setColor(ColorRGBA.White.mult(10));             // light color
         spot.setPosition(new Vector3f(-1, 5, 5));           // shine from camera loc
         spot.setDirection(cam.getDirection());              // shine forward from camera loc
         rootNode.addLight(spot);
-
+   
     }
 
     public void makeCannonBall(float x, float y, float z, String w) {
@@ -335,8 +337,13 @@ public class Main extends SimpleApplication {
         stone_mat.setTexture("ColorMap", tex2);
 
         mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture monkeyTex = assetManager.loadTexture("Textures/madeira.jpg");
+        Texture monkeyTex = assetManager.loadTexture("Textures/paredee.jpg");
         mat.setTexture("ColorMap", monkeyTex);
+        
+        arcade = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex2 = assetManager.loadTexture("Models/Others/AM_Screen.jpg");
+        arcade.setTexture("ColorMap", monkeyTex2);
+
 
     }
 
@@ -457,7 +464,7 @@ public class Main extends SimpleApplication {
     private void initPhysics() {
 
         bulletAppState = new BulletAppState();
-   //     bulletAppState.setDebugEnabled(true);
+      bulletAppState.setDebugEnabled(true);
         stateManager.attach(bulletAppState);
 
     }
