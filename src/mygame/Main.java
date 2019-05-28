@@ -6,6 +6,8 @@ import com.jme3.asset.TextureKey;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -163,18 +165,22 @@ public class Main extends SimpleApplication {
         
 
         PoolCue = assetManager.loadModel("/Models/Others/Poolcue.j3o");
-
-        PoolCue.scale(5);
-        PoolCue.move(1.2f, -5.9f, -7.1f);
-        rootNode.attachChild(PoolCue);
-        taco = new RigidBodyControl(0.0f);
-        PoolCue.addControl(taco);
-        bulletAppState.getPhysicsSpace().add(taco);
         
+        PoolCue.scale(5);
+        PoolCue.setLocalTranslation(1.2f, -5.9f, -7.1f);
+        
+        taco = new RigidBodyControl(0.0f);
+        
+        PoolCue.addControl(taco);
+        taco.setPhysicsLocation(PoolCue.getLocalTranslation());
+        
+        rootNode.attachChild(PoolCue);
+        bulletAppState.getPhysicsSpace().add(taco);
+      
 
 
         float b = -2f;
-        makeCannonBall(0.195f*5, 10, -14.5f, "Textures/branca.jpg");
+        makeCannonBall(0.195f*3, 10, -14.5f, "Textures/branca.jpg");
         makeCannonBall(0, b, -14.5f, "Textures/1.jpg");
         makeCannonBall(0.195f, b, -14.5f, "Textures/2.jpg");
         makeCannonBall(0.195f * 2, b, -14.5f, "Textures/3.jpg");
@@ -244,7 +250,8 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        //  setPoolCue();
+   //     setPoolCue();
+        System.out.println(PoolCue.getLocalTranslation().y);
     }
 
     @Override
@@ -619,14 +626,20 @@ public class Main extends SimpleApplication {
     }
 
     private ActionListener actionListener = new ActionListener() {
+        int i = 6;
+        int z = -6;
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
 
             if (name.equals("play") && !keyPressed) {
-                hitPoolCue(0, 0, 2);
+               i++;
+                hitPoolCue(1.2f, -5.9f, i);
+                
             }
             if (name.equals("play2") && !keyPressed) {
-                hitPoolCue(0, 0, -2);
+                z--;
+                hitPoolCue(1.2f, -5.9f, z);
+                
             }
             if (name.equals("x") && !keyPressed) {
                 
@@ -645,15 +658,17 @@ public class Main extends SimpleApplication {
         }
     };
 
-    private void hitPoolCue(int x, int y, int z) {
+    private void hitPoolCue(float x, float y, int z) {
 
         PoolCue.move(x, y, z);
+        PoolCue.getControl(RigidBodyControl.class).setPhysicsLocation(new Vector3f(x,y,z));
 
     }
 
     private void initPhysics() {
 
         bulletAppState = new BulletAppState();
+        bulletAppState.setDebugEnabled(true);
         stateManager.attach(bulletAppState);
 
     }
