@@ -11,6 +11,7 @@ import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapText;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
@@ -105,10 +106,10 @@ public class Main extends SimpleApplication {
         makeTable();
 
         flyCam.setMoveSpeed(60);
-        cam.setLocation(new Vector3f(0, 30, -20));
+        cam.setLocation(new Vector3f(-3.204769E-4f, 19.85392f, -18.305336f));
 
         cam.lookAt(new Vector3f(0, -90, 0), Vector3f.UNIT_Y);
-
+   
         shootables = new Node("Shootables");
         makeFloor(0, -4, -10.5f);
         bulletAppState.getPhysicsSpace().add(shootables);
@@ -241,7 +242,17 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        colisaoBolaChao();
+      //  System.out.println(cam.getLocation());
+       
+      //  System.out.println(cam.getRotation());
+        colisaoBolaChao(); 
+        colisaoBolaTaco();
+        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+         BitmapText text1 = new BitmapText(guiFont, false);
+        text1.setSize(guiFont.getCharSet().getRenderedSize());
+        text1.setText("Teclas: 1, 2 e 3 mudam a camera");
+        text1.setLocalTranslation(1500, 50, 0);
+        guiNode.attachChild(text1);
         //setPoolCue();
         // taco.setPhysicsLocation(PoolCue.getLocalTranslation());
         // System.out.println(PoolCue.getLocalTranslation().y);
@@ -414,14 +425,20 @@ public class Main extends SimpleApplication {
     private void initKeys() {
         inputManager.addMapping("play", new MouseButtonTrigger(mouseInput.BUTTON_LEFT));
         inputManager.addMapping("play2", new MouseButtonTrigger(mouseInput.BUTTON_RIGHT));
-        inputManager.addMapping("x", new KeyTrigger(keyInput.KEY_X));
-        inputManager.addMapping("c", new KeyTrigger(keyInput.KEY_C));
-        inputManager.addMapping("v", new KeyTrigger(keyInput.KEY_V));
-
+        inputManager.addMapping("1", new KeyTrigger(keyInput.KEY_1));
+        inputManager.addMapping("2", new KeyTrigger(keyInput.KEY_2));
+        inputManager.addMapping("3", new KeyTrigger(keyInput.KEY_3));
+        inputManager.addMapping("1", new KeyTrigger(keyInput.KEY_4));
+        inputManager.addMapping("2", new KeyTrigger(keyInput.KEY_5));
+       
         inputManager.addListener(actionListener, "play");
         inputManager.addListener(actionListener, "play2");
-        inputManager.addListener(actionListener, "x");
-        inputManager.addListener(actionListener, "c");
+        inputManager.addListener(actionListener, "1");
+        inputManager.addListener(actionListener, "2");
+        inputManager.addListener(actionListener, "3");
+        inputManager.addListener(actionListener, "4");
+        inputManager.addListener(actionListener, "5");
+              
     }
 
     private ActionListener actionListener = new ActionListener() {
@@ -440,20 +457,36 @@ public class Main extends SimpleApplication {
                 hitPoolCue(1.2f, -5.9f, i);
 
             }
-            if (name.equals("x") && !keyPressed) {
+            
+            if (name.equals("1") && !keyPressed) {
 
-                cam.setLocation(new Vector3f(0, 5, 20));
+                cam.setLocation(new Vector3f(-3.204769E-4f, 19.85392f, -18.305336f));
 
-                cam.lookAt(new Vector3f(0, -0, 0), Vector3f.UNIT_Y);
+                cam.lookAt(new Vector3f(0, -90, 0), Vector3f.UNIT_Y);
             }
-            if (name.equals("c") && !keyPressed) {
+            if (name.equals("2") && !keyPressed) {
+
+                cam.setLocation(new Vector3f(0.09246415f, 5.9476595f, 3.7059166f));
+
+                cam.lookAt(new Vector3f(0,5,0), Vector3f.UNIT_Y);
+            }
+            if (name.equals("3") && !keyPressed) {
+
+                cam.setLocation(new Vector3f(13.952617f, 8.124902f, -22.604095f));
+
+                cam.lookAt(new Vector3f(0, 0, -17), Vector3f.UNIT_Y);
+            }
+             if (name.equals("4") && !keyPressed) {
 
                 cam.setLocation(new Vector3f(0, 30, -20));
 
                 cam.lookAt(new Vector3f(0, -90, 0), Vector3f.UNIT_Y);
             }
-            if (name.equals("v") && !keyPressed) {
+              if (name.equals("5") && !keyPressed) {
 
+                cam.setLocation(new Vector3f(0, 30, -20));
+
+                cam.lookAt(new Vector3f(0, -90, 0), Vector3f.UNIT_Y);
             }
 
         }
@@ -468,7 +501,25 @@ public class Main extends SimpleApplication {
 
             if (results.size() > 0) {
                 bolas.get(i).removeFromParent();
+              
+             //
                 //batidataco.playInstance();
+            }
+        }
+    }
+    
+     private void colisaoBolaTaco() {
+        for (int i = 0; i < bolas.size(); i++) {
+
+            CollisionResults results = new CollisionResults();
+            BoundingVolume bv = bolas.get(i).getWorldBound();
+            PoolCue.collideWith(bv, results);
+
+            if (results.size() > 0) {
+                //bolas.get(i).removeFromParent();
+              //   batidataco.play();  
+             
+              
             }
         }
     }
@@ -539,7 +590,7 @@ public class Main extends SimpleApplication {
     private void initPhysics() {
 
         bulletAppState = new BulletAppState();
-        //     bulletAppState.setDebugEnabled(true);
+      //  bulletAppState.setDebugEnabled(true);
         stateManager.attach(bulletAppState);
 
     }
