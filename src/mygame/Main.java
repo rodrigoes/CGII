@@ -1,51 +1,41 @@
 package mygame;
 
-import com.jme3.animation.LoopMode;
+
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.TextureKey;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
-import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResults;
 import com.jme3.font.BitmapText;
+import com.jme3.input.ChaseCamera;
+import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.light.AmbientLight;
-import com.jme3.light.DirectionalLight;
+import com.jme3.light.Light;
 import com.jme3.light.PointLight;
-import com.jme3.light.SpotLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import static com.jme3.math.ColorRGBA.Black;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.post.FilterPostProcessor;
-import com.jme3.post.ssao.SSAOFilter;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.control.LightControl;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.scene.shape.Sphere.TextureMode;
-import com.jme3.shadow.DirectionalLightShadowFilter;
-import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.texture.Texture;
-import static java.awt.Color.black;
 import java.util.ArrayList;
 
 /**
  * This is the Main Class of your Game. You should only do initialization here.
  * Move your Logic into AppStates or Controls
  *
- * @author normenhansen
+ * @author rodri
  */
 public class Main extends SimpleApplication {
 
@@ -71,8 +61,9 @@ public class Main extends SimpleApplication {
     Material mat;
     Material tecido;
     Material madeira;
+    Material piso;
     private ArrayList<Geometry> bolas = new ArrayList<Geometry>();
-
+    private Ball whiteBall;
     static {
         /**
          * Initialize the cannon ball geometry
@@ -92,131 +83,65 @@ public class Main extends SimpleApplication {
 
     private Node shootables;
     private Node wall;
-    private Node Colisao;
-
+    private Node wall1;
+    private Node wall2;
+ 
+    private Node wall3;
     @Override
     public void simpleInitApp() {
 
         initPhysics();
-        initLight();
+        initLights();
+        initWhiteBall();
+  
+        initFlyCamera(whiteBall.getGeometry());
         initKeys();
-
+        initBalls();
+        
+      
         initAudio();
         initTexture();
-        makeTable();
-
+        //makeTable();
+        initTable();
         flyCam.setMoveSpeed(60);
         cam.setLocation(new Vector3f(-3.204769E-4f, 19.85392f, -18.305336f));
 
-        cam.lookAt(new Vector3f(0, -90, 0), Vector3f.UNIT_Y);
+      //  cam.lookAt(new Vector3f(0, -90, 0), Vector3f.UNIT_Y);
    
         shootables = new Node("Shootables");
-        makeFloor(0, -4, -10.5f);
+        shootables.attachChild(makeFloor(-5, -4, -12.5f));
         bulletAppState.getPhysicsSpace().add(shootables);
         rootNode.attachChild(shootables);
 
-        /*
-        shootables = new Node("Shootables");
-        shootables.attachChild(makeFloor(0, 6, -10.5f));
-        bulletAppState.getPhysicsSpace().add(shootables);
-        rootNode.attachChild(shootables);
-         */
         wall = new Node("wall");
-        wall.attachChild(makeWall(15, 4, -10.5f, 0.2f, 8, 20));
+        wall.attachChild(makeWall(30, 4, -10.5f, 0.2f, 8, 35));
         bulletAppState.getPhysicsSpace().add(wall);
         rootNode.attachChild(wall);
         //MakeBox(11, 1, 5.5f, "Textures/Mahogany.jpg", 0, -3.2f, -15.5f);
-        Colisao = new Node("colisao");
-        Colisao.attachChild(makeWall(0, -3.2f, -15.5f, 11, 1, 6f));
-        bulletAppState.getPhysicsSpace().add(Colisao);
-        rootNode.attachChild(Colisao);
+  
+        wall3 = new Node("wall3");
+        wall3.attachChild(makeWall(-35, 4, -10.5f, 0.2f, 8, 35));
+        bulletAppState.getPhysicsSpace().add(wall3);
+        rootNode.attachChild(wall3);
 
-        wall = new Node("wall");
-        wall.attachChild(makeWall(-15, 4, -10.5f, 0.2f, 8, 20));
-        bulletAppState.getPhysicsSpace().add(wall);
-        rootNode.attachChild(wall);
+        wall1 = new Node("wall");
+        wall1.attachChild(makeWall(-22, 4, 5, 0, 8, 40));
+        wall1.rotate(0, 1.5708f, 0); //90 graus 1.5708 rad
+        bulletAppState.getPhysicsSpace().add(wall1);
+        rootNode.attachChild(wall1);        //////
+        
+        wall2 = new Node("wall");
+        wall2.attachChild(makeWall(30, 4, 0, 0, 8, 35));
+        wall2.rotate(0, 1.5708f, 0); //90 graus 1.5708 rad
+        bulletAppState.getPhysicsSpace().add(wall2);
+        rootNode.attachChild(wall2); 
 
-        wall = new Node("wall");
-        wall.attachChild(makeWall(30, 4, 0, 0.f, 8, 15));
-        wall.rotate(0, 1.5708f, 0); //90 graus 1.5708 rad
-        bulletAppState.getPhysicsSpace().add(wall);
-        rootNode.attachChild(wall);        //////
 
-
-        /*
-        Table = assetManager.loadModel("/Models/Table/agrvai7.j3o");
-        Material gun_mat;
-        gun_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture gun_text = assetManager.loadTexture("/Models/Table/wood032.jpg");
-        gun_mat.setTexture("ColorMap", gun_text);
-        Table.setMaterial(gun_mat);
-        Table.setLocalScale(0.85f);
-        Table.move(0, -3.63f, -10.5f);
-        Table.rotate(0, 1.5708f, 0);
-        rootNode.attachChild(Table);
-
-        RigidBodyControl r5 = new RigidBodyControl(10);
-        Table.addControl(r5);
-        r5.setPhysicsLocation(Table.getLocalTranslation());
-        bulletAppState.getPhysicsSpace().add(Table);*/
- /* Barreira = assetManager.loadModel("/Models/Table/barreira.j3o");
-     
-        Texture gun_textq = assetManager.loadTexture("/Models/Table/wood032.jpg");
-        gun_mat.setTexture("ColorMap", gun_textq);
-        Barreira.setMaterial(gun_mat);
-        Barreira.setLocalScale(0.85f);
-        Barreira.move(0, -3.10f, -18.5f);
-        Barreira.rotate(0, 1.5708f, 0);
-        rootNode.attachChild(Barreira);
-
-        RigidBodyControl r7 = new RigidBodyControl(0);
-        Barreira.addControl(r7);
-        r7.setPhysicsLocation(Barreira.getLocalTranslation());
-        bulletAppState.getPhysicsSpace().add(Barreira);
-         */
-        /////
+      
         Spatial Wardrobe = assetManager.loadModel("/Models/Others/Sideboard.obj");
         Wardrobe.scale(20);
         rootNode.attachChild(Wardrobe);
 
-        PoolCue = assetManager.loadModel("/Models/Others/Poolcue.j3o");
-
-        PoolCue.scale(5);
-        //PoolCue.rotate(0,180,0);
-        PoolCue.setLocalTranslation(1.2f, -5.9f, -7.1f);
-        //setPoolCue();
-        taco = new RigidBodyControl(0.0f);
-
-        PoolCue.addControl(taco);
-        taco.setPhysicsLocation(PoolCue.getLocalTranslation());
-
-        rootNode.attachChild(PoolCue);
-        bulletAppState.getPhysicsSpace().add(taco);
-
-        float a = 0.195f;
-        float b = -1f;
-
-        makeCannonBall(a * 5, 14, -14.5f, "Textures/branca.jpg");
-        makeCannonBall(a * 3, 10, -14.5f, "Textures/branca.jpg");
-        makeCannonBall(a * 2, 10, -14.5f, "Textures/branca.jpg");
-        makeCannonBall(a * 1, 10, -14.5f, "Textures/branca.jpg");
-        makeCannonBall(a * 3.5f, 10, -14.5f, "Textures/branca.jpg");
-        makeCannonBall(0, b, -14.5f, "Textures/1.jpg");
-        makeCannonBall(a, b, -14.5f, "Textures/2.jpg");
-        makeCannonBall(a * 2, b, -14.5f, "Textures/3.jpg");
-        makeCannonBall(a * 3, b, -14.5f, "Textures/4.jpg");
-        makeCannonBall(a * 4, b, -14.5f, "Textures/5.jpg");
-        makeCannonBall(0, b, -13.5f, "Textures/6.jpg");
-        makeCannonBall(a, b, -13.5f, "Textures/7.jpg");
-        makeCannonBall(a * 2, b, -13.5f, "Textures/8.jpg");
-        makeCannonBall(a * 3, b, -13.5f, "Textures/9.jpg");
-        makeCannonBall(0, b, -12.5f, "Textures/10.jpg");
-        makeCannonBall(a, b, -12.5f, "Textures/11.jpg");
-        makeCannonBall(a * 2, b, -12.5f, "Textures/12.jpg");
-        makeCannonBall(0, b, -11.5f, "Textures/13.jpg");
-        makeCannonBall(a, b, -11.5f, "Textures/14.jpg");
-        makeCannonBall(a * 3, b, -10.5f, "Textures/15.jpg");
-        // Ball.move(0, -5, -10.1f);
 
         VenetianBlind = assetManager.loadModel("/Models/Others/Arcade machine.j3o");
         VenetianBlind.scale(0.06f);
@@ -230,13 +155,8 @@ public class Main extends SimpleApplication {
         //tamanho (tamanho x,tamanho y,tamanho z,textura,posicao x,posicao y,posicao z)
         MakeQuadro(2, 3, 0.1f, "Textures/monalisa.jpg", 5, 5, -29.5f);
         MakeQuadro(2, 3, 0.1f, "Textures/palmeiras.jpg", -5, 5, -29.5f);
-        MakeQuadro(1, 1, 0.1f, "Textures/glauco.jpg", -10, 5, -29.5f);
+        MakeQuadro(2, 2, 0.1f, "Textures/glauco.jpg", -10, 5, -29.5f);
 
-        //Wardrobe.setLocalTranslation(0, -4, -10.5f);
-        //VenetianBlind.setLocalTranslation(0, 0, -29.6f);
-        //Table.setLocalTranslation(0, -4, -10.5f);
-        //PoolCue.setLocalTranslation(0, -3.9f, -10.5f);
-        //Ball.setLocalTranslation(0, -4, -10.5f);
     }
     private CollisionResults results = new CollisionResults();
 
@@ -245,12 +165,12 @@ public class Main extends SimpleApplication {
       //  System.out.println(cam.getLocation());
        
       //  System.out.println(cam.getRotation());
-        colisaoBolaChao(); 
-        colisaoBolaTaco();
+//        colisaoBolaChao(); 
+     //   colisaoBolaTaco();
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
          BitmapText text1 = new BitmapText(guiFont, false);
         text1.setSize(guiFont.getCharSet().getRenderedSize());
-        text1.setText("Teclas: 1, 2 e 3 mudam a camera");
+        text1.setText("Controle com o botao esquerdo do mause,segure mire e solte");
         text1.setLocalTranslation(1500, 50, 0);
         guiNode.attachChild(text1);
         //setPoolCue();
@@ -263,9 +183,16 @@ public class Main extends SimpleApplication {
         //TODO: add render code
     }
 
-    protected void makeFloor(float x, float y, float z) {
+    protected Geometry makeFloor(float x, float y, float z) {
 
-        MakeBox(15, 0.1f, 20, "Textures/piso2.jpg", x, y, z);
+ 
+        Box a = new Box(35, 0.1f, 35);
+        Geometry geom = new Geometry("Box", a);
+        geom.setMaterial(piso);
+
+        geom.setLocalTranslation(x, y, z);
+
+        return geom;
 
     }
 
@@ -311,18 +238,41 @@ public class Main extends SimpleApplication {
         return geom;
 
     }
+    
+    private void initBalls() {
+        for (int i = 0; i <= 3; ++i) {
+            for (int j = 0; j <= i; ++j) {
+                new Ball(assetManager, rootNode, bulletAppState,
+                        new Vector3f(10f + i * .87f, 1f, -i * .5f + j), "Textures/3.jpg");
+            }
+        }
 
-    private void initLight() {
+        new Ball(assetManager, rootNode, bulletAppState,
+                new Vector3f(14f, 0f, 0f), "Textures/2.jpg");
 
-        SpotLight spot = new SpotLight();
-        spot.setSpotRange(1000f);                           // distance
-        spot.setSpotInnerAngle(15f * FastMath.DEG_TO_RAD);  // inner light cone (central beam)
-        spot.setSpotOuterAngle(35f * FastMath.DEG_TO_RAD);  // outer light cone (edge of the light)
-        spot.setColor(ColorRGBA.White.mult(10));             // light color
-        spot.setPosition(new Vector3f(-1, 5, 5));           // shine from camera loc
-        spot.setDirection(cam.getDirection());              // shine forward from camera loc
-        rootNode.addLight(spot);
+        new Ball(assetManager, rootNode, bulletAppState,
+                new Vector3f(9f, 0f, 0f), "Textures/3.jpg");
+        new Ball(assetManager, rootNode, bulletAppState,
+                new Vector3f(0f, 0f, 0f), "Textures/4.jpg");
+        new Ball(assetManager, rootNode, bulletAppState,
+                new Vector3f(-10f, 0f, 0f), "Textures/5.jpg");
+        new Ball(assetManager, rootNode, bulletAppState,
+                new Vector3f(-10f, 0f, -3f), "Textures/6.jpg");
+        new Ball(assetManager, rootNode, bulletAppState,
+                new Vector3f(-10f, 0f, 3f), "Textures/7.jpg");
+    }
 
+
+    
+         private void initTable() {
+              
+        Spatial table = assetManager.loadModel("/Models/table2.j3o");
+        table.setLocalTranslation(0, -2, 0);
+        RigidBodyControl tableBodyControl = new RigidBodyControl(0.0f);
+        table.addControl(tableBodyControl);
+        bulletAppState.getPhysicsSpace().add(tableBodyControl);
+        tableBodyControl.setRestitution(0f);
+        rootNode.attachChild(table);
     }
 
     public void makeCannonBall(float x, float y, float z, String w) {
@@ -375,6 +325,10 @@ public class Main extends SimpleApplication {
         arcade = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Texture monkeyTex2 = assetManager.loadTexture("Models/Others/AM_Screen.jpg");
         arcade.setTexture("ColorMap", monkeyTex2);
+        
+        piso = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture monkeyTex5 = assetManager.loadTexture("Textures/piso2.jpg");
+        piso.setTexture("ColorMap", monkeyTex5);
 
         madeira = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Texture monkeyTex3 = assetManager.loadTexture("Textures/Mahogany.jpg");
@@ -423,21 +377,12 @@ public class Main extends SimpleApplication {
     }
 
     private void initKeys() {
-        inputManager.addMapping("play", new MouseButtonTrigger(mouseInput.BUTTON_LEFT));
-        inputManager.addMapping("play2", new MouseButtonTrigger(mouseInput.BUTTON_RIGHT));
-        inputManager.addMapping("1", new KeyTrigger(keyInput.KEY_1));
-        inputManager.addMapping("2", new KeyTrigger(keyInput.KEY_2));
-        inputManager.addMapping("3", new KeyTrigger(keyInput.KEY_3));
-        inputManager.addMapping("1", new KeyTrigger(keyInput.KEY_4));
-        inputManager.addMapping("2", new KeyTrigger(keyInput.KEY_5));
+        inputManager.addMapping("shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+      //  inputManager.addMapping("play2", new MouseButtonTrigger(mouseInput.BUTTON_RIGHT));
+        
        
-        inputManager.addListener(actionListener, "play");
-        inputManager.addListener(actionListener, "play2");
-        inputManager.addListener(actionListener, "1");
-        inputManager.addListener(actionListener, "2");
-        inputManager.addListener(actionListener, "3");
-        inputManager.addListener(actionListener, "4");
-        inputManager.addListener(actionListener, "5");
+        inputManager.addListener(actionListener, "shoot");
+       
               
     }
 
@@ -447,17 +392,16 @@ public class Main extends SimpleApplication {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
 
-            if (name.equals("play") && !keyPressed) {
-                i++;
-                hitPoolCue(1.2f, -5.9f, i);
-
-            }
-            if (name.equals("play2") && !keyPressed) {
+           if (name.equals("shoot") && !keyPressed) {
+                    hitWhiteBall();
+                    batidataco.playInstance();
+                }
+           /* if (name.equals("play2") && !keyPressed) {
                 i--;
                 hitPoolCue(1.2f, -5.9f, i);
 
-            }
-            
+            }*/
+            /*
             if (name.equals("1") && !keyPressed) {
 
                 cam.setLocation(new Vector3f(-3.204769E-4f, 19.85392f, -18.305336f));
@@ -487,42 +431,28 @@ public class Main extends SimpleApplication {
                 cam.setLocation(new Vector3f(0, 30, -20));
 
                 cam.lookAt(new Vector3f(0, -90, 0), Vector3f.UNIT_Y);
-            }
+            }*/
 
         }
     };
-
+/*
     private void colisaoBolaChao() {
         for (int i = 0; i < bolas.size(); i++) {
 
             CollisionResults results = new CollisionResults();
-            BoundingVolume bv = bolas.get(i).getWorldBound();
-            Colisao.collideWith(bv, results);
+            BoundingVolume bv = whiteBall.getWorldBound();
+            shootables.collideWith(bv, results);
 
             if (results.size() > 0) {
-                bolas.get(i).removeFromParent();
+                whiteBall.removeFromParent();
               
              //
                 //batidataco.playInstance();
             }
         }
     }
+    */
     
-     private void colisaoBolaTaco() {
-        for (int i = 0; i < bolas.size(); i++) {
-
-            CollisionResults results = new CollisionResults();
-            BoundingVolume bv = bolas.get(i).getWorldBound();
-            PoolCue.collideWith(bv, results);
-
-            if (results.size() > 0) {
-                //bolas.get(i).removeFromParent();
-              //   batidataco.play();  
-             
-              
-            }
-        }
-    }
 
     private void MakeBox(float tamx, float tamy, float tamz, String texture, float posx, float posy, float posz) {
 
@@ -594,5 +524,38 @@ public class Main extends SimpleApplication {
         stateManager.attach(bulletAppState);
 
     }
-
+    private void initWhiteBall() {
+        
+        whiteBall = new Ball(assetManager, rootNode, bulletAppState,
+                new Vector3f(-14f, 0f, 0f), "Textures/branca.jpg");
+    }
+    private void initFlyCamera(Spatial target) {
+        
+        cam.setLocation(new Vector3f());
+        flyCam.setEnabled(false);
+        ChaseCamera chaseCam = new ChaseCamera(cam, target, inputManager);
+        chaseCam.setSmoothMotion(true);
+    }
+    
+ 
+      private void initLights() {
+          
+        initLight(-15, 10, -5);
+        initLight(-15, 10, 5);
+        initLight(15, 10, 5);
+        initLight(15, 10, -5);
+    }
+      
+        private Light initLight(int posX, int posY, int posZ) {
+        PointLight light = new PointLight();
+        light.setPosition(new Vector3f(posX, posY, posZ));
+        light.setColor(ColorRGBA.LightGray);
+        rootNode.addLight(light);
+        return light;
+    }
+        
+        private void hitWhiteBall() {
+        whiteBall.getGeometry().getControl(RigidBodyControl.class).applyCentralForce(cam.getDirection().setY(0).normalize().mult(1000));
+    }
+     
 }
