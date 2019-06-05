@@ -162,6 +162,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+        colisaoBolaChao();
       //  System.out.println(cam.getLocation());
        
       //  System.out.println(cam.getRotation());
@@ -246,6 +247,7 @@ public class Main extends SimpleApplication {
                 k+=1;
                 new Ball(assetManager, rootNode, bulletAppState,
                         new Vector3f(10f + i * .87f, 1f, -i * .5f + j), "Textures/" + k + ".jpg");
+                        
             }
         }
 
@@ -437,23 +439,23 @@ public class Main extends SimpleApplication {
 
         }
     };
-/*
+
     private void colisaoBolaChao() {
-        for (int i = 0; i < bolas.size(); i++) {
+     //   for (int i = 0; i < bolas.size(); i++) {
 
             CollisionResults results = new CollisionResults();
-            BoundingVolume bv = whiteBall.getWorldBound();
+            BoundingVolume bv = whiteBall.getGeometry().getWorldBound();
             shootables.collideWith(bv, results);
 
             if (results.size() > 0) {
-                whiteBall.removeFromParent();
-              
-             //
-                //batidataco.playInstance();
+                whiteBall.getGeometry().removeFromParent();
+                initWhiteBall();
+            
+        initFlyCamera(whiteBall.getGeometry());
             }
-        }
+     //   }
     }
-    */
+    
     
 
     private void MakeBox(float tamx, float tamy, float tamz, String texture, float posx, float posy, float posz) {
@@ -557,7 +559,7 @@ public class Main extends SimpleApplication {
     }
         
         private void hitWhiteBall() {
-        whiteBall.getGeometry().getControl(RigidBodyControl.class).applyCentralForce(cam.getDirection().setY(0).normalize().mult(1000));
+        whiteBall.getGeometry().getControl(RigidBodyControl.class).applyCentralForce(cam.getDirection().setY(0).normalize().mult(800));
     }
      
 }
