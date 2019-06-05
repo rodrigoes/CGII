@@ -240,26 +240,28 @@ public class Main extends SimpleApplication {
     }
     
     private void initBalls() {
+        int k = 5;
         for (int i = 0; i <= 3; ++i) {
             for (int j = 0; j <= i; ++j) {
+                k+=1;
                 new Ball(assetManager, rootNode, bulletAppState,
-                        new Vector3f(10f + i * .87f, 1f, -i * .5f + j), "Textures/3.jpg");
+                        new Vector3f(10f + i * .87f, 1f, -i * .5f + j), "Textures/" + k + ".jpg");
             }
         }
 
         new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(14f, 0f, 0f), "Textures/2.jpg");
+                new Vector3f(14f, 0f, 0f), "Textures/1.jpg");
 
         new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(9f, 0f, 0f), "Textures/3.jpg");
+                new Vector3f(9f, 0f, 0f), "Textures/2.jpg");
         new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(0f, 0f, 0f), "Textures/4.jpg");
+                new Vector3f(0f, 0f, 0f), "Textures/3.jpg");
         new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(-10f, 0f, 0f), "Textures/5.jpg");
+                new Vector3f(-10f, 0f, 0f), "Textures/4.jpg");
         new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(-10f, 0f, -3f), "Textures/6.jpg");
+                new Vector3f(-10f, 0f, -3f), "Textures/5.jpg");
         new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(-10f, 0f, 3f), "Textures/7.jpg");
+                new Vector3f(-10f, 0f, 3f), "Textures/6.jpg");
     }
 
 
