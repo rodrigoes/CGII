@@ -18,6 +18,14 @@ import com.jme3.light.Light;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import static com.jme3.math.ColorRGBA.Black;
+import static com.jme3.math.ColorRGBA.Blue;
+import static com.jme3.math.ColorRGBA.Brown;
+import static com.jme3.math.ColorRGBA.Green;
+import static com.jme3.math.ColorRGBA.Magenta;
+import static com.jme3.math.ColorRGBA.Red;
+import static com.jme3.math.ColorRGBA.White;
+import static com.jme3.math.ColorRGBA.Yellow;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -25,9 +33,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Sphere;
-import com.jme3.scene.shape.Sphere.TextureMode;
 import com.jme3.texture.Texture;
+import static java.awt.Color.yellow;
 import java.util.ArrayList;
 
 /**
@@ -54,7 +61,6 @@ public class Main extends SimpleApplication {
     private RigidBodyControl ball_phy;
     private RigidBodyControl taco;
     private RigidBodyControl teste;
-    private static final Sphere sphere;
     Material stone_mat;
     Material arcade;
     Material mat;
@@ -63,18 +69,6 @@ public class Main extends SimpleApplication {
     Material piso;
     private ArrayList<Ball> bolas = new ArrayList<Ball>();
     private Ball whiteBall;
-
-    static {
-        /**
-         * Initialize the cannon ball geometry
-         */
-        sphere = new Sphere(50, 50, 0.39f, true, false);
-        sphere.setTextureMode(TextureMode.Projected);
-        /**
-         * Initialize the brick geometry
-         */
-
-    }
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -112,31 +106,31 @@ public class Main extends SimpleApplication {
         shootables.attachChild(makeFloor(-5, -4, -12.5f));
         bulletAppState.getPhysicsSpace().add(shootables);
         rootNode.attachChild(shootables);
-        
+
         shootables2 = new Node("Shootables");
-        shootables2.attachChild(makeFloor(-5, 18, -12.5f));
+        shootables2.attachChild(makeFloor(-5, 20, -12.5f));
         bulletAppState.getPhysicsSpace().add(shootables2);
         rootNode.attachChild(shootables2);
 //float xpos, float ypos, float zpos, float xtam, float ytam, float ztam
         wall = new Node("wall");
-        wall.attachChild(makeWall(40, 4, -10.5f, 0.2f, 12, 55));
+        wall.attachChild(makeWall(40, 4, -10.5f, 0.2f, 14, 55));
         bulletAppState.getPhysicsSpace().add(wall);
         rootNode.attachChild(wall);
         //MakeBox(11, 1, 5.5f, "Textures/Mahogany.jpg", 0, -3.2f, -15.5f);
 
         wall3 = new Node("wall3");
-        wall3.attachChild(makeWall(-45, 4, -10.5f, 0.2f, 12, 55));
+        wall3.attachChild(makeWall(-45, 4, -10.5f, 0.2f, 14, 55));
         bulletAppState.getPhysicsSpace().add(wall3);
         rootNode.attachChild(wall3);
 
         wall1 = new Node("wall");
-        wall1.attachChild(makeWall(-32, 4, 5, 0, 12, 55));
+        wall1.attachChild(makeWall(-32, 4, 5, 0, 14, 55));
         wall1.rotate(0, 1.5708f, 0); //90 graus 1.5708 rad
         bulletAppState.getPhysicsSpace().add(wall1);
         rootNode.attachChild(wall1);        //////
 
         wall2 = new Node("wall");
-        wall2.attachChild(makeWall(40, 4, 0, 0, 12, 60));
+        wall2.attachChild(makeWall(40, 4, 0, 0, 14, 60));
         wall2.rotate(0, 1.5708f, 0); //90 graus 1.5708 rad
         bulletAppState.getPhysicsSpace().add(wall2);
         rootNode.attachChild(wall2);
@@ -173,7 +167,6 @@ public class Main extends SimpleApplication {
         //   colisaoBolaTaco();
         instrucoes();
 
-
         //setPoolCue();
         // taco.setPhysicsLocation(PoolCue.getLocalTranslation());
         // System.out.println(PoolCue.getLocalTranslation().y);
@@ -186,7 +179,7 @@ public class Main extends SimpleApplication {
 
     protected Geometry makeFloor(float x, float y, float z) {
 
-        Box a = new Box(55, 0.1f, 55);
+        Box a = new Box(60, 0.1f, 60);
         Geometry geom = new Geometry("Box", a);
         geom.setMaterial(piso);
 
@@ -234,54 +227,47 @@ public class Main extends SimpleApplication {
         geom.setMaterial(mat);
 
         geom.setLocalTranslation(xpos, ypos, zpos);
-/*
-        RigidBodyControl rr = new RigidBodyControl(0.0f);
 
-        geom.addControl(rr);
-
-        rr.setPhysicsLocation(geom.getLocalTranslation());
-
-        bulletAppState.getPhysicsSpace().add(rr);*/
         return geom;
 
     }
 
     private void initBalls() {
-        /*
+
         int k = 5;
         for (int i = 0; i <= 3; ++i) {
             for (int j = 0; j <= i; ++j) {
-                k+=1;
+                k += 1;
                 bolas.add(new Ball(assetManager, rootNode, bulletAppState,
-                        new Vector3f(10f + i * .87f, 1f, -i * .5f + j), "Textures/" + k + ".jpg")
-              );
-                        
+                        new Vector3f(10f + i * .87f, 1f, -i * .5f + j), Red)
+                );
+
             }
-        }*/
+        }
         bolas.add(
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(14f, 0f, 0f), "Textures/1.jpg")
-        );
-        bolas.add(
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(9f, 0f, 0f), "Textures/2.jpg")
-        );
-        bolas.add(
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(0f, 0f, 0f), "Textures/3.jpg")
-        );
-        bolas.add(
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(-10f, 0f, 0f), "Textures/4.jpg")
-        );
-        
-        bolas.add(
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(-10f, 0f, -3f), "Textures/5.jpg")
+                new Ball(assetManager, rootNode, bulletAppState,
+                        new Vector3f(14f, 0f, 0f), Black)
         );
         bolas.add(
                 new Ball(assetManager, rootNode, bulletAppState,
-                        new Vector3f(-10f, 0f, 3f), "Textures/6.jpg")
+                        new Vector3f(9f, 0f, 0f), Green)
+        );
+        bolas.add(
+                new Ball(assetManager, rootNode, bulletAppState,
+                        new Vector3f(0f, 0f, 0f), Yellow)
+        );
+        bolas.add(
+                new Ball(assetManager, rootNode, bulletAppState,
+                        new Vector3f(-10f, 0f, 0f), Blue)
+        );
+
+        bolas.add(
+                new Ball(assetManager, rootNode, bulletAppState,
+                        new Vector3f(-10f, 0f, -3f), Brown)
+        );
+        bolas.add(
+                new Ball(assetManager, rootNode, bulletAppState,
+                        new Vector3f(-10f, 0f, 3f), Magenta)
         );
     }
 
@@ -294,41 +280,6 @@ public class Main extends SimpleApplication {
         bulletAppState.getPhysicsSpace().add(tableBodyControl);
         tableBodyControl.setRestitution(0f);
         rootNode.attachChild(table);
-    }
-
-    public void makeCannonBall(float x, float y, float z, String w) {
-
-        stone_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        TextureKey key2 = new TextureKey(w);
-        key2.setGenerateMips(true);
-        Texture tex2 = assetManager.loadTexture(key2);
-        stone_mat.setTexture("ColorMap", tex2);
-
-        /**
-         * Create a cannon ball geometry and attach to scene graph.
-         */
-        Geometry ball_geo = new Geometry("cannon ball", sphere);
-        ball_geo.setMaterial(stone_mat);
-        rootNode.attachChild(ball_geo);
-        /**
-         * Position the cannon ball
-         */
-        ball_geo.setLocalTranslation(x, y, z);
-        /**
-         * Make the ball physcial with a mass > 0.0f
-         */
-        ball_phy = new RigidBodyControl(1f);
-        /**
-         * Add physical ball to physics space.
-         */
-
-        ball_geo.addControl(ball_phy);
-        bulletAppState.getPhysicsSpace().add(ball_phy);
-        /**
-         * Accelerate the physcial ball to shoot it.
-         */
-        ball_phy.setLinearVelocity(cam.getDirection().mult(2.6f));
-
     }
 
     private void initTexture() {
@@ -461,7 +412,11 @@ public class Main extends SimpleApplication {
         CollisionResults results = new CollisionResults();
         BoundingVolume bv = whiteBall.getGeometry().getWorldBound();
         shootables.collideWith(bv, results);
-
+        shootables2.collideWith(bv, results);
+        wall.collideWith(bv, results);
+        wall1.collideWith(bv, results);
+        wall2.collideWith(bv, results);
+        wall3.collideWith(bv, results);
         if (results.size() > 0) {
             whiteBall.getGeometry().removeFromParent();
             initWhiteBall();
@@ -477,11 +432,17 @@ public class Main extends SimpleApplication {
             CollisionResults results = new CollisionResults();
             BoundingVolume bv = bolas.get(i).getGeometry().getWorldBound();
             shootables.collideWith(bv, results);
-
+            shootables2.collideWith(bv, results);
+            wall.collideWith(bv, results);
+            wall1.collideWith(bv, results);
+            wall2.collideWith(bv, results);
+            wall3.collideWith(bv, results);
+            
             if (results.size() > 0) {
                 bolas.get(i).getGeometry().removeFromParent();
                 bolas.remove(i);
-                if (bolas.size() == 0) {
+
+                if (bolas.isEmpty()) {
                     gameOver();
                     initBalls();
                 }
@@ -564,7 +525,7 @@ public class Main extends SimpleApplication {
     private void initWhiteBall() {
 
         whiteBall = new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(-14f, 0f, 0f), "Textures/branca.jpg");
+                new Vector3f(-14f, 0f, 0f), White);
     }
 
     private void initFlyCamera(Spatial target) {
@@ -573,7 +534,7 @@ public class Main extends SimpleApplication {
         flyCam.setEnabled(false);
         ChaseCamera chaseCam = new ChaseCamera(cam, target, inputManager);
         chaseCam.setSmoothMotion(true);
-        
+
     }
 
     private void initLights() {
@@ -612,6 +573,7 @@ public class Main extends SimpleApplication {
         light.setColor(ColorRGBA.LightGray);
         rootNode.addLight(light);
         return light;
+        
     }
 
     private void hitWhiteBall() {
