@@ -29,16 +29,16 @@ public class Ball {
          public ArrayList<Geometry> bolas = new ArrayList<Geometry>();
 
 	public Ball(AssetManager assetManager, Node rootNode,
-			BulletAppState bulletAppState, Vector3f startLocation, ColorRGBA color) {
-         /*   Material stone_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-            TextureKey key2 = new TextureKey(color);
+			BulletAppState bulletAppState, Vector3f startLocation, String w) {
+            Material stone_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+            TextureKey key2 = new TextureKey(w);
             key2.setGenerateMips(true);
             Texture tex2 = assetManager.loadTexture(key2);
             stone_mat.setTexture("ColorMap", tex2);
-*/
-		initMaterial(assetManager, color);
+
+		initMaterial(assetManager, w);
 		ballGeometry = new Geometry("cannon ball", sphere);
-		ballGeometry.setMaterial(ballMaterial);
+		ballGeometry.setMaterial(stone_mat);
 		rootNode.attachChild(ballGeometry);
 		
 		/** Position the cannon ball */
@@ -57,13 +57,8 @@ public class Ball {
 		return ballGeometry;
 	}
 
-	private void initMaterial(AssetManager assetManager, ColorRGBA color) {
-             ballMaterial = new Material(assetManager,
-				"Common/MatDefs/Light/Lighting.j3md");
-		ballMaterial.setBoolean("UseMaterialColors", true);
-		ballMaterial.setColor("Diffuse", color);
-		ballMaterial.setColor("Specular", ColorRGBA.White);
-		ballMaterial.setFloat("Shininess", 64f); // [0,128]
+	private void initMaterial(AssetManager assetManager, String w) {
+	
             	
 	}
 
