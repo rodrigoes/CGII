@@ -1,6 +1,5 @@
 package mygame;
 
-
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.TextureKey;
 import com.jme3.audio.AudioData;
@@ -11,6 +10,7 @@ import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResults;
 import com.jme3.font.BitmapText;
 import com.jme3.input.ChaseCamera;
+import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -19,15 +19,25 @@ import com.jme3.light.Light;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import static com.jme3.math.ColorRGBA.Black;
+import static com.jme3.math.ColorRGBA.Blue;
+import static com.jme3.math.ColorRGBA.Brown;
+import static com.jme3.math.ColorRGBA.Gray;
+import static com.jme3.math.ColorRGBA.Green;
+import static com.jme3.math.ColorRGBA.Magenta;
+import static com.jme3.math.ColorRGBA.Red;
+import static com.jme3.math.ColorRGBA.White;
+import static com.jme3.math.ColorRGBA.Yellow;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
+
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Sphere;
-import com.jme3.scene.shape.Sphere.TextureMode;
+import com.jme3.system.AppSettings;
+
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 
@@ -55,125 +65,124 @@ public class Main extends SimpleApplication {
     private RigidBodyControl ball_phy;
     private RigidBodyControl taco;
     private RigidBodyControl teste;
-    private static final Sphere sphere;
     Material stone_mat;
     Material arcade;
     Material mat;
     Material tecido;
     Material madeira;
     Material piso;
-    private ArrayList<Geometry> bolas = new ArrayList<Geometry>();
+    private ArrayList<ColorRGBA> Cores = new ArrayList<ColorRGBA>();
+    private ArrayList<Ball> bolas = new ArrayList<Ball>();
     private Ball whiteBall;
-    static {
-        /**
-         * Initialize the cannon ball geometry
-         */
-        sphere = new Sphere(50, 50, 0.39f, true, false);
-        sphere.setTextureMode(TextureMode.Projected);
-        /**
-         * Initialize the brick geometry
-         */
-
-    }
-
+    public int vel = 800;
+    
     public static void main(String[] args) {
         Main app = new Main();
         app.start();
     }
 
     private Node shootables;
+    private Node shootables2;
     private Node wall;
     private Node wall1;
     private Node wall2;
- 
+
     private Node wall3;
+
     @Override
     public void simpleInitApp() {
-
+  
         initPhysics();
         initLights();
         initWhiteBall();
-  
+
         initFlyCamera(whiteBall.getGeometry());
         initKeys();
         initBalls();
-        
-      
+
         initAudio();
         initTexture();
         //makeTable();
         initTable();
+        
+        AppSettings defs = new AppSettings(false);
         flyCam.setMoveSpeed(60);
         cam.setLocation(new Vector3f(-3.204769E-4f, 19.85392f, -18.305336f));
 
-      //  cam.lookAt(new Vector3f(0, -90, 0), Vector3f.UNIT_Y);
-   
+        //  cam.lookAt(new Vector3f(0, -90, 0), Vector3f.UNIT_Y);
         shootables = new Node("Shootables");
+        
         shootables.attachChild(makeFloor(-5, -4, -12.5f));
         bulletAppState.getPhysicsSpace().add(shootables);
         rootNode.attachChild(shootables);
 
+        shootables2 = new Node("Shootables");
+        shootables2.attachChild(makeFloor(-5, 20, -12.5f));
+        bulletAppState.getPhysicsSpace().add(shootables2);
+        rootNode.attachChild(shootables2);
+        //float xpos, float ypos, float zpos, float xtam, float ytam, float ztam
         wall = new Node("wall");
-        wall.attachChild(makeWall(30, 4, -10.5f, 0.2f, 8, 35));
+        wall.attachChild(makeWall(40, 4, -10.5f, 0.2f, 14, 55));
         bulletAppState.getPhysicsSpace().add(wall);
         rootNode.attachChild(wall);
         //MakeBox(11, 1, 5.5f, "Textures/Mahogany.jpg", 0, -3.2f, -15.5f);
-  
+
         wall3 = new Node("wall3");
-        wall3.attachChild(makeWall(-35, 4, -10.5f, 0.2f, 8, 35));
+        wall3.attachChild(makeWall(-45, 4, -10.5f, 0.2f, 14, 55));
         bulletAppState.getPhysicsSpace().add(wall3);
         rootNode.attachChild(wall3);
 
         wall1 = new Node("wall");
-        wall1.attachChild(makeWall(-22, 4, 5, 0, 8, 40));
+        wall1.attachChild(makeWall(-32, 4, 5, 0, 14, 55));
         wall1.rotate(0, 1.5708f, 0); //90 graus 1.5708 rad
         bulletAppState.getPhysicsSpace().add(wall1);
         rootNode.attachChild(wall1);        //////
-        
+
         wall2 = new Node("wall");
-        wall2.attachChild(makeWall(30, 4, 0, 0, 8, 35));
+        wall2.attachChild(makeWall(40, 4, 0, 0, 14, 60));
         wall2.rotate(0, 1.5708f, 0); //90 graus 1.5708 rad
         bulletAppState.getPhysicsSpace().add(wall2);
-        rootNode.attachChild(wall2); 
+        rootNode.attachChild(wall2);
 
-
-      
         Spatial Wardrobe = assetManager.loadModel("/Models/Others/Sideboard.obj");
         Wardrobe.scale(20);
         rootNode.attachChild(Wardrobe);
-
 
         VenetianBlind = assetManager.loadModel("/Models/Others/Arcade machine.j3o");
         VenetianBlind.scale(0.06f);
         VenetianBlind.setMaterial(arcade);
 
         VenetianBlind.rotate(0, 0, 0);
-        VenetianBlind.setLocalTranslation(0, -4, -27.6f);
+        VenetianBlind.setLocalTranslation(0, -4, -37.6f);
         bulletAppState.getPhysicsSpace().add(VenetianBlind);
         rootNode.attachChild(VenetianBlind);
 
         //tamanho (tamanho x,tamanho y,tamanho z,textura,posicao x,posicao y,posicao z)
-        MakeQuadro(2, 3, 0.1f, "Textures/monalisa.jpg", 5, 5, -29.5f);
-        MakeQuadro(2, 3, 0.1f, "Textures/palmeiras.jpg", -5, 5, -29.5f);
-        MakeQuadro(2, 2, 0.1f, "Textures/glauco.jpg", -10, 5, -29.5f);
+        MakeQuadro(4, 6, 0.1f, "Textures/monalisa.jpg", 7, 5, -39.5f);
+        MakeQuadro(4, 6, 0.1f, "Textures/palmeiras.jpg", -7, 5, -39.5f);
+        MakeQuadro(4, 4, 0.1f, "Textures/glauco.jpg", -20, 5, -39.5f);
 
     }
     private CollisionResults results = new CollisionResults();
 
     @Override
     public void simpleUpdate(float tpf) {
+        guiNode.detachAllChildren();
         colisaoBolaChao();
-      //  System.out.println(cam.getLocation());
-       
-      //  System.out.println(cam.getRotation());
+        colisaoBolasChao();
+        //  System.out.println(cam.getLocation());
+
+        //  System.out.println(cam.getRotation());
 //        colisaoBolaChao(); 
-     //   colisaoBolaTaco();
-        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
-         BitmapText text1 = new BitmapText(guiFont, false);
-        text1.setSize(guiFont.getCharSet().getRenderedSize());
-        text1.setText("Controle com o botao esquerdo do mause,segure mire e solte");
-        text1.setLocalTranslation(1500, 50, 0);
-        guiNode.attachChild(text1);
+        //   colisaoBolaTaco();
+        instrucoes();
+        velocidade();
+      
+       
+                
+            
+        
+        
         //setPoolCue();
         // taco.setPhysicsLocation(PoolCue.getLocalTranslation());
         // System.out.println(PoolCue.getLocalTranslation().y);
@@ -186,8 +195,7 @@ public class Main extends SimpleApplication {
 
     protected Geometry makeFloor(float x, float y, float z) {
 
- 
-        Box a = new Box(35, 0.1f, 35);
+        Box a = new Box(60, 0.1f, 60);
         Geometry geom = new Geometry("Box", a);
         geom.setMaterial(piso);
 
@@ -239,37 +247,22 @@ public class Main extends SimpleApplication {
         return geom;
 
     }
-    
+
     private void initBalls() {
-        int k = 5;
-        for (int i = 0; i <= 3; ++i) {
+       int k = 0;
+        for (int i = 0; i <= 4; ++i) {
             for (int j = 0; j <= i; ++j) {
-                k+=1;
-                new Ball(assetManager, rootNode, bulletAppState,
-                        new Vector3f(10f + i * .87f, 1f, -i * .5f + j), "Textures/" + k + ".jpg");
-                        
+                k += 1;
+                bolas.add(new Ball(assetManager, rootNode, bulletAppState,
+                        new Vector3f(10f + i * .87f, 1f, -i * .5f + j), "Textures/" + k + ".jpg")
+                );
+
             }
         }
-
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(14f, 0f, 0f), "Textures/1.jpg");
-
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(9f, 0f, 0f), "Textures/2.jpg");
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(0f, 0f, 0f), "Textures/3.jpg");
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(-10f, 0f, 0f), "Textures/4.jpg");
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(-10f, 0f, -3f), "Textures/5.jpg");
-        new Ball(assetManager, rootNode, bulletAppState,
-                new Vector3f(-10f, 0f, 3f), "Textures/6.jpg");
     }
 
+    private void initTable() {
 
-    
-         private void initTable() {
-              
         Spatial table = assetManager.loadModel("/Models/table2.j3o");
         table.setLocalTranslation(0, -2, 0);
         RigidBodyControl tableBodyControl = new RigidBodyControl(0.0f);
@@ -277,41 +270,6 @@ public class Main extends SimpleApplication {
         bulletAppState.getPhysicsSpace().add(tableBodyControl);
         tableBodyControl.setRestitution(0f);
         rootNode.attachChild(table);
-    }
-
-    public void makeCannonBall(float x, float y, float z, String w) {
-
-        stone_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        TextureKey key2 = new TextureKey(w);
-        key2.setGenerateMips(true);
-        Texture tex2 = assetManager.loadTexture(key2);
-        stone_mat.setTexture("ColorMap", tex2);
-
-        /**
-         * Create a cannon ball geometry and attach to scene graph.
-         */
-        Geometry ball_geo = new Geometry("cannon ball", sphere);
-        ball_geo.setMaterial(stone_mat);
-        rootNode.attachChild(ball_geo);
-        /**
-         * Position the cannon ball
-         */
-        ball_geo.setLocalTranslation(x, y, z);
-        /**
-         * Make the ball physcial with a mass > 0.0f
-         */
-        ball_phy = new RigidBodyControl(1f);
-        /**
-         * Add physical ball to physics space.
-         */
-
-        ball_geo.addControl(ball_phy);
-        bulletAppState.getPhysicsSpace().add(ball_phy);
-        /**
-         * Accelerate the physcial ball to shoot it.
-         */
-        ball_phy.setLinearVelocity(cam.getDirection().mult(2.6f));
-        bolas.add(ball_geo);
     }
 
     private void initTexture() {
@@ -329,7 +287,7 @@ public class Main extends SimpleApplication {
         arcade = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Texture monkeyTex2 = assetManager.loadTexture("Models/Others/AM_Screen.jpg");
         arcade.setTexture("ColorMap", monkeyTex2);
-        
+
         piso = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Texture monkeyTex5 = assetManager.loadTexture("Textures/piso2.jpg");
         piso.setTexture("ColorMap", monkeyTex5);
@@ -382,12 +340,16 @@ public class Main extends SimpleApplication {
 
     private void initKeys() {
         inputManager.addMapping("shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-      //  inputManager.addMapping("play2", new MouseButtonTrigger(mouseInput.BUTTON_RIGHT));
+  
+        inputManager.addMapping("force",  new KeyTrigger(KeyInput.KEY_K));
         
-       
+        inputManager.addMapping("force2",  new KeyTrigger(KeyInput.KEY_L));
+        
+        inputManager.addMapping("restart",  new KeyTrigger(KeyInput.KEY_R));
         inputManager.addListener(actionListener, "shoot");
-       
-              
+        inputManager.addListener(actionListener, "force");
+        inputManager.addListener(actionListener, "force2");
+        inputManager.addListener(actionListener, "restart");
     }
 
     private ActionListener actionListener = new ActionListener() {
@@ -396,16 +358,28 @@ public class Main extends SimpleApplication {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
 
-           if (name.equals("shoot") && !keyPressed) {
-                    hitWhiteBall();
-                    batidataco.playInstance();
-                }
-           /* if (name.equals("play2") && !keyPressed) {
+            if (name.equals("shoot") && !keyPressed) {
+                hitWhiteBall();
+                batidataco.playInstance();
+            }
+            if (name.equals("force") && !keyPressed) {
+               if(vel<=950)
+                    vel+=50;
+            }
+             if (name.equals("force2") && !keyPressed) {
+                if(vel>=250)
+                    vel-=50;
+            }
+             if (name.equals("restart") && !keyPressed) {
+               // gameOver();
+            }
+             
+            /* if (name.equals("play2") && !keyPressed) {
                 i--;
                 hitPoolCue(1.2f, -5.9f, i);
 
             }*/
-            /*
+ /*
             if (name.equals("1") && !keyPressed) {
 
                 cam.setLocation(new Vector3f(-3.204769E-4f, 19.85392f, -18.305336f));
@@ -441,22 +415,52 @@ public class Main extends SimpleApplication {
     };
 
     private void colisaoBolaChao() {
-     //   for (int i = 0; i < bolas.size(); i++) {
+        //   for (int i = 0; i < bolas.size(); i++) {
+
+        CollisionResults results = new CollisionResults();
+        BoundingVolume bv = whiteBall.getGeometry().getWorldBound();
+        shootables.collideWith(bv, results);
+        shootables2.collideWith(bv, results);
+        wall.collideWith(bv, results);
+        wall1.collideWith(bv, results);
+        wall2.collideWith(bv, results);
+        wall3.collideWith(bv, results);
+        if (results.size() > 0) {
+            whiteBall.getGeometry().removeFromParent();
+            initWhiteBall();
+
+            initFlyCamera(whiteBall.getGeometry());
+        }
+        //   }
+    }
+
+    private void colisaoBolasChao() {
+        for (int i = 0; i < bolas.size(); i++) {
 
             CollisionResults results = new CollisionResults();
-            BoundingVolume bv = whiteBall.getGeometry().getWorldBound();
+            BoundingVolume bv = bolas.get(i).getGeometry().getWorldBound();
             shootables.collideWith(bv, results);
-
-            if (results.size() > 0) {
-                whiteBall.getGeometry().removeFromParent();
-                initWhiteBall();
+            shootables2.collideWith(bv, results);
+            wall.collideWith(bv, results);
+            wall1.collideWith(bv, results);
+            wall2.collideWith(bv, results);
+            wall3.collideWith(bv, results);
             
-        initFlyCamera(whiteBall.getGeometry());
+            if (results.size() > 0) {
+                bolas.get(i).getGeometry().removeFromParent();
+                bolas.remove(i);
+
+                if (bolas.isEmpty()) {
+                   // gameOver();
+                    initBalls();
+                    whiteBall.getGeometry().removeFromParent();
+                    initWhiteBall();
+                    initFlyCamera(whiteBall.getGeometry());
+                }
+                //initFlyCamera(bolas.get(i).getGeometry());
             }
-     //   }
+        }
     }
-    
-    
 
     private void MakeBox(float tamx, float tamy, float tamz, String texture, float posx, float posy, float posz) {
 
@@ -465,11 +469,12 @@ public class Main extends SimpleApplication {
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Texture monkeyTex4 = assetManager.loadTexture(texture);
-        mat.setTexture("ColorMap", monkeyTex4);
+        mat.setTexture("DiffuseMap", monkeyTex4);
         geom.setMaterial(mat);
 
         geom.setLocalTranslation(posx, posy, posz);
         rootNode.attachChild(geom);
+       /* this shadow needs a directional light */
 
         RigidBodyControl r = new RigidBodyControl(0.0f);
 
@@ -520,46 +525,88 @@ public class Main extends SimpleApplication {
         PoolCue.getControl(RigidBodyControl.class).setPhysicsLocation(new Vector3f(x, y, z));
 
     }
+    
 
     private void initPhysics() {
 
         bulletAppState = new BulletAppState();
-      //  bulletAppState.setDebugEnabled(true);
+        //bulletAppState.setDebugEnabled(true);
         stateManager.attach(bulletAppState);
 
     }
+
     private void initWhiteBall() {
-        
+
         whiteBall = new Ball(assetManager, rootNode, bulletAppState,
                 new Vector3f(-14f, 0f, 0f), "Textures/branca.jpg");
+        vel=800;
     }
+
     private void initFlyCamera(Spatial target) {
-        
+
         cam.setLocation(new Vector3f());
+        
         flyCam.setEnabled(false);
         ChaseCamera chaseCam = new ChaseCamera(cam, target, inputManager);
         chaseCam.setSmoothMotion(true);
+
     }
-    
- 
-      private void initLights() {
-          
+
+    private void initLights() {
+
         initLight(-15, 10, -5);
         initLight(-15, 10, 5);
         initLight(15, 10, 5);
         initLight(15, 10, -5);
     }
-      
-        private Light initLight(int posX, int posY, int posZ) {
+
+    private void gameOver() {
+
+        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        BitmapText text1 = new BitmapText(guiFont, false);
+        text1.setSize(guiFont.getCharSet().getRenderedSize() * 4);
+        text1.setText("GAME OVER");
+        text1.setLocalTranslation(600, 150, 0);
+        guiNode.attachChild(text1);
+
+    }
+
+    private void instrucoes() {
+
+        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        BitmapText text1 = new BitmapText(guiFont, false);
+        text1.setSize(guiFont.getCharSet().getRenderedSize() * 2);
+        text1.setText("Controle com o botao esquerdo do mouse,\n segure mire e solte\n Tecla K aumenta a forca e L diminui.");
+        text1.setLocalTranslation(1250, 150, 0);
+        guiNode.attachChild(text1);
+
+    }    
+    private void velocidade() {
+
+        BitmapText text10 = new BitmapText(guiFont, false);
+        text10.setSize(guiFont.getCharSet().getRenderedSize() * 2 );
+        text10.setText("Força: " + vel);
+        text10.setLocalTranslation(1700, 1050, 0);
+        guiNode.attachChild(text10);
+
+    }
+
+    private Light initLight(int posX, int posY, int posZ) {
         PointLight light = new PointLight();
         light.setPosition(new Vector3f(posX, posY, posZ));
         light.setColor(ColorRGBA.LightGray);
         rootNode.addLight(light);
-        return light;
+    
+         /** Show scattered light beams when camera looks into "sun". */
+        /* this shadow needs a directional light */
+
+    return light;
     }
-        
-        private void hitWhiteBall() {
-        whiteBall.getGeometry().getControl(RigidBodyControl.class).applyCentralForce(cam.getDirection().setY(0).normalize().mult(800));
+
+    private void hitWhiteBall() {
+        whiteBall.getGeometry().getControl(RigidBodyControl.class).applyCentralForce(cam.getDirection().setY(0).normalize().mult(vel));
     }
-     
+
 }
+        /** Write text on the screen (HUD) */
+    
